@@ -1,0 +1,261 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { getEvents, getMediaUrl, renderBlocksToText } from "../services/strapi";
+import { EventData, translations } from "../types";
+import { useLanguage } from "../components/LanguageContext";
+import { useTheme } from "../components/ThemeContext";
+import Navbar from "../components/Navbar";
+import Timeline from "../components/Timeline";
+import EventModal from "../components/EventModal";
+import Image from "next/image";
+import { Calendar, Search, LayoutGrid, Clock } from "lucide-react";
+
+export default function Events() {
+  const { language } = useLanguage();
+  const { theme } = useTheme();
+  const t = translations[language];
+  const isDark = theme === "dark";
+
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [view, setView] = useState<"grid" | "timeline">("grid");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getEvents();
+        setEvents(data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const filteredEvents = events.filter(
+    (event) =>
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      renderBlocksToText(event.content)
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
+  );
+
+  const sortedEvents = [...filteredEvents].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+
+  return (
+    <div className={`min-h-screen ${isDark ? "bg-[#0A0A0A] text-[#F5F5F5]" : "bg-[#FEFEFE] text-[#1A1A1A]"}`}>
+      <Navbar />
+
+      <section className="pt-32 pb-24 px-4">
+        <div className="max-w-6xl mx-auto">
+
+          {/* ── Header ── */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-2">
+                {t.events.title}
+              </h1>
+<p className="text-xl text-justify text-zinc-500 max-w-xl mx-auto">
+  {t.events.timeline}
+</p>
+
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="relative w-full md:w-80"
+            >
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+              <input
+                type="text"
+                placeholder="Rechercher une action..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={`w-full pl-12 pr-4 py-3.5 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-600 transition-all text-sm ${
+                  isDark
+                    ? "bg-[#1A1A1A] border-[#2A2A2A] text-[#F5F5F5]"
+                    : "bg-[#FFFFFF] border-[#E5E7EB] text-[#1A1A1A]"
+                }`}
+              />
+            </motion.div>
+          </div>
+
+          {/* ── Toggle Vue ── */}
+          <div className="flex items-center justify-between mb-10">
+            <p className={`text-sm ${isDark ? "text-zinc-500" : "text-stone-400"}`}>
+              {filteredEvents.length} événement{filteredEvents.length > 1 ? "s" : ""}
+            </p>
+
+            <div className={`flex items-center p-1 rounded-2xl border ${isDark ? "bg-[#1A1A1A] border-[#2A2A2A]" : "bg-[#FFFFFF] border-[#E5E7EB]"}`}>
+              <button
+                onClick={() => setView("grid")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  view === "grid"
+                    ? "bg-[#059669] text-[#FFFFFF] shadow-lg"
+                    : isDark ? "text-[#9CA3AF] hover:text-[#F5F5F5]" : "text-[#6B7280] hover:text-[#1A1A1A]"
+                }`}
+              >
+                <LayoutGrid size={15} />
+                <span className="hidden sm:inline">Grille</span>
+              </button>
+              <button
+                onClick={() => setView("timeline")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                  view === "timeline"
+                    ? "bg-[#059669] text-[#FFFFFF] shadow-lg"
+                    : isDark ? "text-[#9CA3AF] hover:text-[#F5F5F5]" : "text-[#6B7280] hover:text-[#1A1A1A]"
+                }`}
+              >
+                <Clock size={15} />
+                <span className="hidden sm:inline">Chronologie</span>
+              </button>
+            </div>
+          </div>
+
+          {/* ── Contenu switchable ── */}
+          <AnimatePresence mode="wait">
+
+            {/* VUE GRILLE */}
+            {view === "grid" && (
+              <motion.div
+                key="grid"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.25 }}
+              >
+                {loading ? (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className={`aspect-[4/3] rounded-2xl animate-pulse ${isDark ? "bg-zinc-800" : "bg-stone-200"}`} />
+                    ))}
+                  </div>
+                ) : sortedEvents.length === 0 ? (
+                  <p className={`text-center py-24 ${isDark ? "text-zinc-600" : "text-stone-400"}`}>
+                    Aucun événement trouvé.
+                  </p>
+                ) : (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {sortedEvents.map((event, idx) => {
+                      const imageUrl = getMediaUrl(event.main_photo);
+                      return (
+                        <motion.div
+                          key={event.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: idx * 0.07 }}
+                          className={`group rounded-2xl overflow-hidden shadow-xl shadow-black/5 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-2xl ${
+                            isDark ? "bg-zinc-900" : "bg-white"
+                          }`}
+                          onClick={() => setSelectedEvent(event)}
+                        >
+                          <div className="relative aspect-video overflow-hidden">
+                            {imageUrl ? (
+                              <Image
+                                src={imageUrl}
+                                alt={event.title}
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                              />
+                            ) : (
+                              <div className={`w-full h-full flex items-center justify-center ${isDark ? "bg-zinc-800" : "bg-stone-100"}`}>
+                                <Calendar className="w-12 h-12 text-zinc-400" />
+                              </div>
+                            )}
+                            <div className="absolute top-4 left-4 px-3 py-1 bg-emerald-600 text-white rounded-full text-xs font-bold uppercase tracking-wider">
+                              {new Date(event.date).toLocaleDateString(
+                                language === "fr" ? "fr-FR" : "en-US",
+                                { year: "numeric", month: "long" },
+                              )}
+                            </div>
+                          </div>
+                          <div className="p-6">
+                            <h3 className="text-xl font-bold mb-3 group-hover:text-emerald-600 transition-colors leading-tight">
+                              {event.title}
+                            </h3>
+                            <p className={`text-sm line-clamp-3 mb-5 leading-relaxed text-justify ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
+                              {renderBlocksToText(event.content)}
+                            </p>
+                            <button className="text-emerald-600 font-bold text-xs uppercase tracking-widest flex items-center gap-2 hover:gap-3 transition-all">
+                              {t.events.readMore} →
+                            </button>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* VUE TIMELINE */}
+            {view === "timeline" && (
+              <motion.div
+                key="timeline"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Timeline
+                  items={sortedEvents.map((event) => ({
+                    id: event.id,
+                    date: new Date(event.date).toLocaleDateString(
+                      language === "fr" ? "fr-FR" : "en-US",
+                      { year: "numeric", month: "long", day: "numeric" },
+                    ),
+                    title: event.title,
+                    content: (
+                      <div className="space-y-4">
+                        {getMediaUrl(event.main_photo) && (
+                          <div className="relative w-full aspect-video rounded-2xl overflow-hidden">
+                            <Image
+                              src={getMediaUrl(event.main_photo)}
+                              alt={event.title}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 50vw"
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <h4 className="text-xl font-bold">{event.title}</h4>
+                        <p className={`text-sm leading-relaxed text-justify ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>
+                          {renderBlocksToText(event.content)}
+                        </p>
+                        <button
+                          onClick={() => setSelectedEvent(event)}
+                          className="text-emerald-600 font-bold text-xs uppercase tracking-widest hover:underline"
+                        >
+                          {t.events.readMore}
+                        </button>
+                      </div>
+                    ),
+                  }))}
+                />
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+        </div>
+      </section>
+
+      {selectedEvent && (
+        <EventModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
+    </div>
+  );
+}
