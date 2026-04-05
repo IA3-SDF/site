@@ -604,7 +604,6 @@ export default function Albums() {
         )}
       </AnimatePresence>
 
-      <Footer />
     </div>
   );
 }

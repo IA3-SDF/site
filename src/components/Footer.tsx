@@ -65,7 +65,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="mt-16 pt-8 border-t border-subtle text-center text-sm text-muted">
-          <p>© {new Date().getFullYear()} AMESCAO. Tous droits réservés. |Félix kpanoga| </p>
+          <p>© {new Date().getFullYear()} AMESCAO. Tous droits réservés. | Développeur : Félix kpanoga| </p>
         </div>
       </div>
     </footer>
