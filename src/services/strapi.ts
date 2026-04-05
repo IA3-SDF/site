@@ -40,14 +40,31 @@ export async function getReports(): Promise<ReportData[]> {
 }
 
 export async function getBoardMembers(): Promise<BoardMemberData[]> {
-  const res = await axios.get(`${API_URL}/board-members?populate=role`);
-  const data = res.data.data as BoardMemberData[];
+  const res = await axios.get(`${API_URL}/board-members?populate=*`);
+  const items = res.data.data as any[];
 
-  // Tri par ordre du rôle
-  return data.sort(
-  (a, b) => a.role.data.attributes.order - b.role.data.attributes.order
-);
+  const getRoleOrder = (role: any): number => {
+    if (!role) return Number.MAX_SAFE_INTEGER;
+    if (typeof role === 'number') return role;
+    if (typeof role === 'string') {
+      const n = parseInt(role, 10);
+      return isNaN(n) ? Number.MAX_SAFE_INTEGER : n;
+    }
+    if (typeof role === 'object') {
+      if (typeof role.order === 'number') return role.order;
+      if (role.attributes && typeof role.attributes.order === 'number') return role.attributes.order;
+      if (role.data && role.data.attributes && typeof role.data.attributes.order === 'number') return role.data.attributes.order;
+    }
+    return Number.MAX_SAFE_INTEGER;
+  };
 
+  items.sort((a, b) => {
+    const ao = getRoleOrder(a.role);
+    const bo = getRoleOrder(b.role);
+    return ao - bo;
+  });
+
+  return items as BoardMemberData[];
 }
 
 export async function getAbout(): Promise<AboutData> {

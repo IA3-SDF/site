@@ -33,24 +33,15 @@ export interface ReportData {
   file?: StrapiMedia;
 }
 
-export interface RoleData {
-  id: number;
-  attributes: {
-    name: string;
-    order: number;
-  };
-}
-
 export interface BoardMemberData {
   id: number;
   documentId: string;
   name: string;
   surname?: string;
+  order: number;
+  role: string;
   photo?: StrapiMedia;
   bio?: string;
-  role: {
-    data: RoleData;
-  };
 }
 
 export interface AboutData {
