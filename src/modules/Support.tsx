@@ -80,7 +80,7 @@ export default function Support() {
                 Mixx by Yas
               </div>
               <div className="text-emerald-600 dark:text-emerald-400 text-2xl font-black tracking-wider">
-                +228 93 80 72 14
+                +228 92 85 92 00
               </div>
             </div>
 
@@ -114,7 +114,7 @@ export default function Support() {
                 Flooz
               </div>
               <div className="text-orange-500 dark:text-orange-400 text-2xl font-black tracking-wider">
-                +228 99 58 77 90
+                +228 97 78 94 51
               </div>
             </div>
 

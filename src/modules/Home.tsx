@@ -42,6 +42,12 @@ export default function Home() {
           getReports(),
           getBoardMembers()
         ]);
+        // Trier les événements par date (du plus récent au plus ancien)
+        const toTime = (d: any) => {
+          const t = new Date(d).getTime();
+          return Number.isNaN(t) ? 0 : t;
+        };
+        eventsData.sort((a: any, b: any) => toTime(b.date) - toTime(a.date));
         setEvents(eventsData);
         setReports(reportsData);
         setBoardMembers(boardData);
