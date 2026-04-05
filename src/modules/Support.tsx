@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useLanguage } from "../components/LanguageContext";
 import { motion } from "framer-motion";
 import { useTheme } from "../components/ThemeContext";
 import Navbar from "../components/Navbar";
@@ -9,6 +10,7 @@ import Image from "next/image";
 
 export default function Support() {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   const isDark = theme === "dark";
 
@@ -35,20 +37,20 @@ export default function Support() {
           animate={{ opacity: 1, y: 0 }}
           className="text-5xl md:text-7xl font-bold tracking-tight mb-6"
         >
-          Soutenir notre amicale
+          {t.support.title}
         </motion.h1>
 
         <p
           className={`max-w-xl mx-auto text-lg ${isDark ? "text-zinc-400" : "text-zinc-600"}`}
         >
-          Un geste simple, un impact réel.
+          {t.support.motivation}
         </p>
       </section>
 
       {/* MOBILE MONEY */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <h2 className="text-2xl md:text-3xl font-semibold mb-10">
-          Paiement Mobile
+          {t.support.donateTitle}
         </h2>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -65,6 +67,7 @@ export default function Support() {
                 src="/YAS.png"
                 alt="Mixx by Yas"
                 fill
+                sizes="(max-width: 640px) 100vw, 50vw"
                 className="object-contain"
               />
             </div>
@@ -98,6 +101,7 @@ export default function Support() {
                 src="/flooz.png"
                 alt="Flooz"
                 fill
+                sizes="(max-width: 640px) 100vw, 50vw"
                 className="object-contain"
               />
             </div>
@@ -123,7 +127,7 @@ export default function Support() {
       {/* VISA PREMIUM */}
       <section className="max-w-6xl mx-auto px-4 pb-24">
   <h2 className="text-2xl md:text-3xl font-bold mb-10 tracking-tight">
-    Carte Bancaire
+    {t.support.donateTitle}
   </h2>
 
   <div className="flex justify-center italic">
@@ -188,11 +192,11 @@ export default function Support() {
   </div>
 
   {/* Bouton de paiement ultra-moderne */}
-  <div className="mt-12 text-center">
+      <div className="mt-12 text-center">
     <button className={`group relative px-10 py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl overflow-hidden
       ${isDark ? 'bg-white text-black' : 'bg-zinc-900 text-white hover:bg-black'}`}>
       <span className="relative z-10 flex items-center gap-2">
-        Payer par carte
+        {t.support.donateButton}
         <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
       </span>
     </button>

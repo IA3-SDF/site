@@ -33,14 +33,24 @@ export interface ReportData {
   file?: StrapiMedia;
 }
 
+export interface RoleData {
+  id: number;
+  attributes: {
+    name: string;
+    order: number;
+  };
+}
+
 export interface BoardMemberData {
   id: number;
   documentId: string;
   name: string;
   surname?: string;
-  role: string;
   photo?: StrapiMedia;
   bio?: string;
+  role: {
+    data: RoleData;
+  };
 }
 
 export interface AboutData {
@@ -76,6 +86,7 @@ export interface Translation {
     presentationTitle: string;
     presentationText: string;
     recentEvents: string;
+    seeAll: string;
     boardTitle: string;
     reportsTitle: string;
   };
@@ -131,8 +142,9 @@ export const translations: Record<Language, Translation> = {
       presentationTitle: 'Notre Vision, Votre Avenir',
       presentationText: 'AMESCAO n’est pas seulement une amicale, c’est une communauté vivante et solidaire. Nous croyons que chaque jeune du canton d’Aouda porte en lui une force capable de transformer son avenir et celui de toute la collectivité. Notre vision est de faire de l’éducation, de la culture, de la santé et de l’entrepreneuriat les piliers d’un développement durable et inclusif. Nous unissons nos énergies pour que les défis deviennent des opportunités, que l’action collective mène au succès, et que chaque réussite individuelle soit célébrée comme une victoire partagée. Ensemble, nous bâtissons un avenir où la jeunesse est le moteur du progrès et la fierté de notre canton.',
       recentEvents: 'Nos Dernières Actions',
-      boardTitle: 'Le Bureau : Des Leaders Engagés',
-      reportsTitle: 'Transparence & Impact'
+      seeAll: 'Voir tout',
+      boardTitle: 'Le Bureau',
+      reportsTitle: 'Rapports d’Activité'
     },
     events: {
       title: 'Nos Actions',
@@ -188,6 +200,7 @@ export const translations: Record<Language, Translation> = {
       presentationTitle: 'Our Vision, Your Future',
       presentationText: 'AMESCAO is not just an association, it is a family. We join forces to transform the potential of every young person in Aouda into a brilliant success. Education, culture, and solidarity are the pillars of our commitment.',
       recentEvents: 'Our Latest Actions',
+      seeAll: 'See all',
       boardTitle: 'The Board: Committed Leaders',
       reportsTitle: 'Transparency & Impact'
     },
@@ -242,6 +255,7 @@ export const translations: Record<Language, Translation> = {
       presentationTitle: 'Unsere Vision, Ihre Zukunft',
       presentationText: 'AMESCAO ist nicht nur ein Verein, es ist eine famille. Wir bündeln unsere Kräfte, um das Potenzial jedes jungen Menschen in Aouda in einen glänzenden Erfolg zu verwandeln. Bildung, Kultur und Solidarität sind die Säulen unseres Engagements.',
       recentEvents: 'Unsere neuesten Aktionen',
+      seeAll: 'Alles ansehen',
       boardTitle: 'Der Vorstand: Engagierte Führungskräfte',
       reportsTitle: 'Tätigkeitsberichte'
     },

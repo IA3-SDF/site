@@ -38,6 +38,7 @@ function PhotoViewer({
   onClose: () => void;
 }) {
   const [idx, setIdx] = useState(startIndex);
+  const { t } = useLanguage();
 
   const prev = () => setIdx((i) => (i - 1 + photos.length) % photos.length);
   const next = () => setIdx((i) => (i + 1) % photos.length);
@@ -80,7 +81,7 @@ function PhotoViewer({
             onClick={onClose}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-all"
           >
-            <X size={16} /> Fermer
+            <X size={16} /> {t.events.close}
           </button>
         </div>
       </div>
@@ -102,6 +103,7 @@ function PhotoViewer({
               src={getMediaUrl(photos[idx])}
               alt={photos[idx].name || `photo-${idx}`}
               fill
+                sizes="100vw"
               className="object-contain"
               referrerPolicy="no-referrer"
               priority
@@ -145,6 +147,7 @@ function PhotoViewer({
                 src={getMediaUrl(p)}
                 alt=""
                 fill
+                    sizes="56px"
                 className="object-cover"
                 referrerPolicy="no-referrer"
               />
@@ -570,8 +573,8 @@ export default function Albums() {
                             className={`text-[10px] uppercase tracking-widest mt-0.5 ${
                               isDark ? 'text-zinc-600' : 'text-stone-400'
                             }`}
-                          >
-                            Voir tout
+                            >
+                            {t.home.seeAll}
                           </p>
                         </div>
 

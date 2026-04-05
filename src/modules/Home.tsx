@@ -81,92 +81,93 @@ export default function Home() {
         {/* Header */}
         <div className={`flex items-center gap-2 px-5 py-4 border-b ${isDark ? 'border-[#2A2A2A]' : 'border-[#E5E7EB]'}`}>
           <Users size={14} className="text-emerald-600" />
-          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-emerald-600">Bureau</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-emerald-600">{t.home.boardTitle}</p>
         </div>
 
         {/* Liste — scroll si > 5 membres */}
-        <div className={`${PANEL_MAX_H} overflow-y-auto py-2 px-2`} style={{ scrollbarWidth: 'none' }}>
-          {loading
-            ? [...Array(4)].map((_, i) => (
-                <div key={i} className={`h-14 rounded-2xl mb-1.5 animate-pulse ${isDark ? 'bg-[#2A2A2A]' : 'bg-[#F9FAFB]'}`} />
-              ))
-            : boardMembers.length === 0
-            ? <p className={`text-center text-xs py-8 ${isDark ? 'text-[#9CA3AF]' : 'text-[#6B7280]'}`}>Aucun membre</p>
-            : boardMembers.map((member, idx) => (
-                <div key={member.id}>
-                  <motion.button
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.04 }}
-                    onClick={() => setExpandedMember(expandedMember === member.id ? null : member.id)}
-                    className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-all ${
-                      expandedMember === member.id
-                        ? isDark ? 'bg-emerald-950/60 ring-1 ring-emerald-700/40' : 'bg-emerald-50 ring-1 ring-emerald-200'
-                        : isDark ? 'hover:bg-[#2A2A2A]/70' : 'hover:bg-[#F9FAFB]'
-                    }`}
-                  >
-                    {/* Photo cercle */}
-                    <div className="relative w-10 h-10 flex-shrink-0">
-                      <div className={`w-10 h-10 rounded-full overflow-hidden ring-2 ${
-                        expandedMember === member.id ? 'ring-emerald-500' : isDark ? 'ring-[#2A2A2A]' : 'ring-[#E5E7EB]'
-                      }`}>
-                        {getMediaUrl(member.photo) ? (
-                          <Image
-                            src={getMediaUrl(member.photo)}
-                            alt={`${member.name} ${member.surname || ''}`}
-                            width={40}
-                            height={40}
-                            className="object-cover w-full h-full"
-                          />
-                        ) : (
-                          <div className={`w-full h-full flex items-center justify-center text-sm font-black ${
-                            isDark ? 'bg-zinc-800 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
-                          }`}>
-                            {member.name?.[0]}
-                          </div>
-                        )}
-                      </div>
-                      <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ${isDark ? 'ring-zinc-900' : 'ring-white'}`} />
-                    </div>
+<div className={`${PANEL_MAX_H} overflow-y-auto py-2 px-2`} style={{ scrollbarWidth: 'none' }}>
+  {loading
+    ? [...Array(4)].map((_, i) => (
+        <div key={i} className={`h-14 rounded-2xl mb-1.5 animate-pulse ${isDark ? 'bg-[#2A2A2A]' : 'bg-[#F9FAFB]'}`} />
+      ))
+    : boardMembers.length === 0
+    ? <p className={`text-center text-xs py-8 ${isDark ? 'text-[#9CA3AF]' : 'text-[#6B7280]'}`}>Aucun membre</p>
+    : boardMembers.map((member, idx) => (
+        <div key={member.id}>
+          <motion.button
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.04 }}
+            onClick={() => setExpandedMember(expandedMember === member.id ? null : member.id)}
+            className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-all ${
+              expandedMember === member.id
+                ? isDark ? 'bg-emerald-950/60 ring-1 ring-emerald-700/40' : 'bg-emerald-50 ring-1 ring-emerald-200'
+                : isDark ? 'hover:bg-[#2A2A2A]/70' : 'hover:bg-[#F9FAFB]'
+            }`}
+          >
+            {/* Photo cercle */}
+            <div className="relative w-10 h-10 flex-shrink-0">
+              <div className={`w-10 h-10 rounded-full overflow-hidden ring-2 ${
+                expandedMember === member.id ? 'ring-emerald-500' : isDark ? 'ring-[#2A2A2A]' : 'ring-[#E5E7EB]'
+              }`}>
+                {getMediaUrl(member.photo) ? (
+                  <Image
+                    src={getMediaUrl(member.photo)}
+                    alt={`${member.name} ${member.surname || ''}`}
+                    width={40}
+                    height={40}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <div className={`w-full h-full flex items-center justify-center text-sm font-black ${
+                    isDark ? 'bg-zinc-800 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+                  }`}>
+                    {member.name?.[0]}
+                  </div>
+                )}
+              </div>
+              <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ${isDark ? 'ring-zinc-900' : 'ring-white'}`} />
+            </div>
 
-                    {/* Nom + rôle */}
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-bold truncate leading-tight ${isDark ? 'text-zinc-100' : 'text-stone-800'}`}>
-                        {member.name} {member.surname}
-                      </p>
-                      <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider truncate mt-0.5">
-                        {member.role}
-                      </p>
-                    </div>
+            {/* Nom + rôle */}
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-bold truncate leading-tight ${isDark ? 'text-zinc-100' : 'text-stone-800'}`}>
+                {member.name} {member.surname}
+              </p>
+              <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider truncate mt-0.5">
+                {member.role?.data?.attributes?.name}
+              </p>
+            </div>
 
-                    <ChevronDown size={13} className={`flex-shrink-0 transition-transform ${
-                      expandedMember === member.id ? 'rotate-180 text-emerald-500' : isDark ? 'text-zinc-600' : 'text-stone-300'
-                    }`} />
-                  </motion.button>
+            <ChevronDown size={13} className={`flex-shrink-0 transition-transform ${
+              expandedMember === member.id ? 'rotate-180 text-emerald-500' : isDark ? 'text-zinc-600' : 'text-stone-300'
+            }`} />
+          </motion.button>
 
-                  {/* Bio */}
-                  <AnimatePresence>
-                    {expandedMember === member.id && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.18 }}
-                        className="overflow-hidden px-2"
-                      >
-                        <div className={`py-2.5 px-3 rounded-xl text-xs leading-relaxed mb-1 ${
-                          isDark ? 'bg-zinc-800/50 text-zinc-400' : 'bg-stone-100 text-stone-500'
-                        }`}>
-                          {(member as any).bio || 'Aucune biographie disponible.'}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+          {/* Bio */}
+          <AnimatePresence>
+            {expandedMember === member.id && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.18 }}
+                className="overflow-hidden px-2"
+              >
+                <div className={`py-2.5 px-3 rounded-xl text-xs leading-relaxed mb-1 ${
+                  isDark ? 'bg-zinc-800/50 text-zinc-400' : 'bg-stone-100 text-stone-500'
+                }`}>
+                  {(member as any).bio || 'Aucune biographie disponible.'}
                 </div>
-              ))
-          }
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
+      ))
+  }
+</div>
+</div>
+
 
       {/* ── Bloc Rapports ── */}
       <div className={`rounded-3xl border overflow-hidden ${
@@ -175,7 +176,7 @@ export default function Home() {
         {/* Header */}
         <div className={`flex items-center gap-2 px-5 py-4 border-b ${isDark ? 'border-zinc-800' : 'border-stone-100'}`}>
           <FileText size={14} className="text-emerald-600" />
-          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-emerald-600">Rapports</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.25em] text-emerald-600">{t.home.reportsTitle}</p>
         </div>
 
         {/* Liste — scroll si > 5 rapports */}
@@ -282,7 +283,7 @@ export default function Home() {
           }`}
         >
           <Menu size={18} />
-          Bureau & Rapports
+          {`${t.home.boardTitle} & ${t.home.reportsTitle}`}
         </button>
       </div>
 
@@ -398,6 +399,7 @@ export default function Home() {
                   src="/photoleft.jpg"
                   alt="Impact"
                   fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover"
                 />
               </motion.div>
@@ -411,7 +413,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 md:mb-8 gap-4">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600 mb-2">
-                  Actualités
+                  {t.events.title}
                 </p>
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
                   {t.home.recentEvents}
@@ -421,7 +423,7 @@ export default function Home() {
                 href="/events" 
                 className="text-emerald-600 hover:text-emerald-500 font-medium flex items-center gap-2 transition-colors text-sm whitespace-nowrap"
               >
-                Voir tout <ArrowRight size={16} />
+                {t.home.seeAll} <ArrowRight size={16} />
               </a>
             </div>
 
@@ -504,7 +506,7 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 tracking-tight">
               {t.about.title}
             </h2>
-            <p className={`text-base md:text-xl text-justify md:text-center mb-8 md:mb-10 leading-relaxed max-w-xl mx-auto ${
+            <p className={`text-base md:text-xl text-justify  mb-8 md:mb-10 leading-relaxed max-w-xl mx-auto ${
               isDark ? 'text-zinc-400' : 'text-zinc-500'
             }`}>
               {t.about.text}

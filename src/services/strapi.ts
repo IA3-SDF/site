@@ -40,8 +40,14 @@ export async function getReports(): Promise<ReportData[]> {
 }
 
 export async function getBoardMembers(): Promise<BoardMemberData[]> {
-  const res = await axios.get(`${API_URL}/board-members?populate=*`);
-  return res.data.data as BoardMemberData[];
+  const res = await axios.get(`${API_URL}/board-members?populate=role`);
+  const data = res.data.data as BoardMemberData[];
+
+  // Tri par ordre du rôle
+  return data.sort(
+  (a, b) => a.role.data.attributes.order - b.role.data.attributes.order
+);
+
 }
 
 export async function getAbout(): Promise<AboutData> {

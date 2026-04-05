@@ -25,12 +25,13 @@ export function HeroSection({ t }: { t: any }) {
           initial={{ scale: 1.08 }}
           animate={{ scale: 1 }}
           transition={{ duration: 2.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="w-full h-full"
+          className="relative w-full h-full"
         >
           <Image
             src="/photoPRINCIPALE.jpg"
             alt="Aouda"
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />

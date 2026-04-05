@@ -66,6 +66,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose }) => {
                   src={getMediaUrl(event.main_photo)}
                   alt={event.title}
                   fill
+                  sizes="100vw"
                   className="object-cover"
                   priority
                 />
@@ -81,7 +82,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose }) => {
             {/* Bouton fermer — toujours visible */}
             <button
               onClick={onClose}
-              aria-label="Fermer"
+                aria-label={t.events.close}
               className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-110 ${
                 isDark
                   ? 'bg-[#2A2A2A] text-[#9CA3AF] hover:bg-[#374151]'
