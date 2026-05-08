@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { updateSession } from './src/services/supabase/middleware'
+import { createServerClient } from '@supabase/ssr'
 
 export async function proxy(req: NextRequest) {
-  // 1. Mettre à jour les cookies Supabase
-  const res = await updateSession(req)
+  // 1. Mettre à jour les cookies Supabase et récupérer l'utilisateur
+  const { response, user } = await updateSession(req)
+  const hasSession = !!user
 
   const pathname = req.nextUrl.pathname
   const url = req.nextUrl.clone()
@@ -13,24 +15,32 @@ export async function proxy(req: NextRequest) {
   const protectedRoutes = ['/home', '/about', '/albums', '/events', '/contact', '/support']
   const adminRoutes = ['/admin']
 
-  // 2. Vérifier la session utilisateur via les cookies (maintenant disponibles)
-  const { createServerClient } = await import('@supabase/ssr')
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return req.cookies.get(name)?.value
-        },
-      },
-    }
-  )
-
-  const { data: { user } } = await supabase.auth.getUser()
-  const hasSession = !!user
-
   console.log(`[Middleware] 🔍 ${pathname} | session: ${hasSession}`)
+
+  // 2. Vérifier le rôle admin si nécessaire
+  let isAdmin = false
+  if (hasSession && adminRoutes.some(route => pathname.startsWith(route))) {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return req.cookies.get(name)?.value
+          },
+        },
+      }
+    )
+
+    // Récupérer le profil utilisateur pour vérifier le rôle
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    isAdmin = profile?.role === 'admin'
+  }
 
   // 3. Redirections
   if (publicRoutes.some(route => pathname.startsWith(route))) {
@@ -38,7 +48,7 @@ export async function proxy(req: NextRequest) {
       url.pathname = '/home'
       return NextResponse.redirect(url)
     }
-    return res
+    return response
   }
 
   if (protectedRoutes.some(route => pathname.startsWith(route))) {
@@ -46,15 +56,15 @@ export async function proxy(req: NextRequest) {
       url.pathname = '/auth/login'
       return NextResponse.redirect(url)
     }
-    return res
+    return response
   }
 
   if (adminRoutes.some(route => pathname.startsWith(route))) {
-    if (!hasSession) {
+    if (!hasSession || !isAdmin) {
       url.pathname = '/auth/login'
       return NextResponse.redirect(url)
     }
-    return res
+    return response
   }
 
   if (pathname === '/') {
@@ -66,7 +76,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  return res
+  return response
 }
 
 export const config = {

@@ -35,6 +35,11 @@ export const metadata: Metadata = {
   },
 };
 
+/*
+En résumé, ce layout global configure les polices, les métadonnées SEO et enveloppe l'application dans un provider pour la gestion de l'état. Il sert de base pour toutes les pages de l'application, assurant une cohérence visuelle et fonctionnelle à travers le site. 
+
+*/
+
 export default function RootLayout({
   children,
 }: {

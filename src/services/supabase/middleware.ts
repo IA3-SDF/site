@@ -5,7 +5,12 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export const updateSession = async (request: NextRequest) => {
+interface UpdateSessionResult {
+  response: NextResponse
+  user: any
+}
+
+export const updateSession = async (request: NextRequest): Promise<UpdateSessionResult> => {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -42,8 +47,8 @@ export const updateSession = async (request: NextRequest) => {
     }
   )
 
-  // Rafraîchit la session si nécessaire
-  await supabase.auth.getUser()
+  // Récupère l'utilisateur et rafraîchit la session si nécessaire
+  const { data: { user } } = await supabase.auth.getUser()
 
-  return response
+  return { response, user }
 }

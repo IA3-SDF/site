@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { translations } from '../types';
+import { translations, AboutData } from '../types';
 import { useLanguage } from '../components/LanguageContext';
 import { useTheme } from '../components/ThemeContext';
 import Navbar from '../components/Navbar';
@@ -41,11 +41,7 @@ export default function About() {
             transition={{ delay: 0.2 }}
             className="text-xl leading-relaxed text-zinc-500 dark:text-zinc-400"
           >
-            {aboutData ? (
-              <p>{renderBlocksToText(aboutData.text)}</p>
-            ) : (
-              <p>{t.home.presentationText}</p>
-            )}
+            <p>{t.home.presentationText}</p>
           </motion.div>
         </div>
       </section>
@@ -59,7 +55,7 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-            <p>{t.home.presentationText}</p></div>
+            >
               <h3 className="text-xl font-bold mb-4">{section.title}</h3>
               <p className="text-muted text-sm leading-relaxed">
                 {section.content}
