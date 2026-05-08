@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { updateSession } from './src/services/supabase/middleware'
-
+/* c'est vrai que tout fonctionne comme prévu, 
+mais pour un vrai déploiement , le site doit proposer l'option de connexion de façon facultative, c'est à dire on arrive bien sur /home, et on a avec les onglets de navigation la possibilité de créer un compte ou de se connecter */
 export async function proxy(req: NextRequest) {
   // 1. Mettre à jour les cookies Supabase
   const res = await updateSession(req)
