@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { updateSession } from './src/services/supabase/middleware'
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   // 1. Mettre à jour les cookies Supabase
   const res = await updateSession(req)
 
