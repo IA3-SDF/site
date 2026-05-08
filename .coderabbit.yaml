@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# yaml-language-server: $schema=https://coderabbit.ai
 language: "fr-FR"
 
 reviews:
@@ -9,16 +9,16 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
-  # Section pour exclure les dossiers et fichiers inutiles
-  path_filters: |
-    !**/node_modules/**
-    !**/dist/**
-    !**/build/**
-    !**/vendor/**
-    !**/*.lock
-    !**/*.min.js
-    !package-lock.json
-    !yarn.lock
+  # Conversion en tableau de chaînes de caractères (YAML sequence)
+  path_filters:
+    - "!**/node_modules/**"
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/vendor/**"
+    - "!**/*.lock"
+    - "!**/*.min.js"
+    - "!package-lock.json"
+    - "!yarn.lock"
 
 chat:
   auto_reply: true
