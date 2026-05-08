@@ -12,7 +12,7 @@ export async function proxy(req: NextRequest) {
   const url = req.nextUrl.clone()
 
   const publicRoutes = ['/auth/login', '/auth/signup']
-  const protectedRoutes = ['/home', '/about', '/albums', '/events', '/contact', '/support']
+  const protectedRoutes = ['/home', '/albums', '/events', '/contact', '/support']
   const adminRoutes = ['/admin']
 
   console.log(`[Middleware] 🔍 ${pathname} | session: ${hasSession}`)
