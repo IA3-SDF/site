@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+import CookieBanner from '@/src/components/CookieBanner';
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
 
 
@@ -50,6 +51,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${outfit.variable} font-sans antialiased`}>
         <Providers>
           {children}
+          <CookieBanner />
         </Providers>
       </body>
     </html>
