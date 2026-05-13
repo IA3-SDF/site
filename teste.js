@@ -30,7 +30,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 
 console.log('🔗 Connexion à Supabase...\n');
 console.log('📍 URL:', supabaseUrl);
-console.log('🔑 Clé SERVICE_ROLE: ✅ Chargée\n');
+console.log('🔑 Clé SERVICE_ROLE: ✅ Chargée (server-only)\n');
 
 // Liste des tables à récupérer
 const tables = [
@@ -93,10 +93,24 @@ async function fetchAllTables() {
       console.log(`${result.status} ${result.table.toUpperCase()}`);
       console.log(`   └─ ${result.count} enregistrement(s)\n`);
       
-      // Affiche les données si disponibles
+      // Affiche les métadonnées (non-sensitive) par défaut
       if (result.data.length > 0) {
-        console.log(`   📋 Aperçu des données:`);
-        console.log(JSON.stringify(result.data.slice(0, 2), null, 2));
+        const verbose = process.env.VERBOSE_PREVIEW === 'true';
+        if (verbose) {
+          console.log(`   📋 Aperçu des données (VERBOSE MODE):`);
+          // Sanitize common sensitive fields
+          const sanitizedData = result.data.slice(0, 2).map((row) => {
+            const sanitized = { ...row };
+            if (sanitized.email) sanitized.email = '[REDACTED_EMAIL]';
+            if (sanitized.name) sanitized.name = '[REDACTED_NAME]';
+            if (sanitized.surname) sanitized.surname = '[REDACTED_SURNAME]';
+            if (sanitized.id && typeof sanitized.id === 'string') sanitized.id = '[REDACTED_ID]';
+            return sanitized;
+          });
+          console.log(JSON.stringify(sanitizedData, null, 2));
+        } else {
+          console.log(`   📋 Data preview: ${result.count} record(s) fetched`);
+        }
         console.log('');
       }
     } else {

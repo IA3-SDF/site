@@ -3,11 +3,20 @@
  */
 import Cookies from 'js-cookie';
 
+declare global {
+  interface Window {
+    dataLayer?: Record<string, any>[];
+    gtag?: (...args: any[]) => void;
+  }
+}
+
 export interface ConsentData {
   analytics: boolean;
   marketing: boolean;
   preferences: boolean;
 }
+
+
 
 const CONSENT_COOKIE_NAME = 'user_consent';
 const CONSENT_EXPIRES_DAYS = 365;
@@ -46,23 +55,33 @@ export const hasUserConsented = (): boolean => {
 
 /**
  * Charger les scripts analytiques si consentement accordé
+ * Guard against duplicate script injection
  */
 export const initAnalytics = (): void => {
   const consent = getLocalConsent();
 
   if (consent?.analytics) {
-    // Exemple : Google Analytics
     if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_GA_ID) {
+      // Check if script already exists
+      const existingScript = document.querySelector(
+        `script[src="https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}"]`
+      );
+      if (existingScript) return; // Already initialized
+
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`;
       document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
-      function gtag(...args: any[]) {
-        (window.dataLayer as any).push(arguments);
+      // Only define gtag if not already defined
+      if (!(window as any).gtag) {
+        function gtag(...args: any[]) {
+          (window.dataLayer as any).push(arguments);
+        }
+        (window as any).gtag = gtag;
       }
-      (window as any).gtag = gtag;
+      const gtag = (window as any).gtag;
       gtag('js', new Date());
       gtag('config', process.env.NEXT_PUBLIC_GA_ID);
     }
@@ -71,13 +90,16 @@ export const initAnalytics = (): void => {
 
 /**
  * Charger les scripts de marketing si consentement accordé
+ * Guard against duplicate pixel injection
  */
 export const initMarketing = (): void => {
   const consent = getLocalConsent();
 
   if (consent?.marketing) {
-    // Exemple : Facebook Pixel
     if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_FB_PIXEL_ID) {
+      // Check if fbq is already defined (pixel already initialized)
+      if ((window as any).fbq) return; // Already initialized
+
       const script = document.createElement('script');
       script.innerHTML = `
         !function(f,b,e,v,n,t,s){

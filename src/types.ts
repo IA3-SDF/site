@@ -119,7 +119,7 @@ export const translations: Record<Language, Translation> = {
       events: 'Événements',
       albums: 'Albums',
       contact: 'Contact',
-      support: 'Soutenir l\'AMESCAO'
+      support: 'Soutenir'
     },
     home: {
       heroTitle: 'AMESCAO',

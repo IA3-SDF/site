@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { UserProfile } from '../types'
 import { getCurrentUserProfile, updateUserProfile, getMediaUrl } from '../services/supabase'
 import { supabase } from '../services/supabase/client'
-import { X, Edit2, Save, LogOut, AlertTriangle, CheckCircle } from 'lucide-react'
+import { X, Edit2, Save, LogOut, AlertTriangle, CheckCircle, Camera, Trash2, UploadCloud } from 'lucide-react'
+import { uploadFile } from '../admin/config/database'
 
 interface ProfileModalProps {
   isOpen: boolean
@@ -18,6 +19,7 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const [editedProfile, setEditedProfile] = useState<Partial<UserProfile>>({})
   const [loading, setLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
@@ -91,6 +93,27 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
   const handleInputChange = (field: keyof UserProfile, value: string) => {
     setEditedProfile(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      try {
+        setIsUploadingPhoto(true)
+        const uploadedUrl = await uploadFile(file)
+        setEditedProfile(prev => ({ ...prev, photo: uploadedUrl }))
+        showNotification('success', 'Photo téléchargée avec succès')
+      } catch (error) {
+        console.error("Erreur d'upload", error)
+        showNotification('error', "Erreur lors du téléchargement de la photo")
+      } finally {
+        setIsUploadingPhoto(false)
+      }
+    }
+  }
+
+  const handleRemovePhoto = () => {
+    setEditedProfile(prev => ({ ...prev, photo: undefined }))
   }
 
   // Variantes d'animation pour le drawer latéral droit
@@ -167,12 +190,12 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 </div>
               ) : profile ? (
                 <>
-                  {/* Photo de profil */}
+                  {/* Photo de profil - Mode affichage ou édition */}
                   <div className="flex justify-center mt-4 mb-6">
-                    <div className="relative">
-                      {profile.photo ? (
+                    <div className="relative group">
+                      {editedProfile.photo || profile.photo ? (
                         <img
-                          src={getMediaUrl(profile.photo)}
+                          src={getMediaUrl(editedProfile.photo || profile.photo || '')}
                           alt={`${profile.name} ${profile.surname}`}
                           className="w-32 h-32 rounded-full object-cover border-4 border-primary shadow-xl"
                         />
@@ -181,12 +204,89 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                           {profile.name?.charAt(0)}{profile.surname?.charAt(0)}
                         </div>
                       )}
+                      
+                      {/* Overlay et bouton d'édition - visible en mode édition */}
+                      {isEditing && (
+                        <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <label className="cursor-pointer p-3 bg-primary text-white rounded-full hover:bg-primary/80 transition-colors transform hover:scale-110">
+                            <Camera size={20} />
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={handlePhotoUpload}
+                              disabled={isUploadingPhoto}
+                            />
+                          </label>
+                        </div>
+                      )}
+
+                      {/* Indicateur de chargement */}
+                      {isUploadingPhoto && (
+                        <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
+                          <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {isEditing ? (
                     // Mode édition
                     <div className="space-y-5 mt-4">
+                      {/* Section Photo */}
+                      <div>
+                        <label className="block text-sm font-black uppercase tracking-wider text-muted mb-3">Photo de profil</label>
+                        <div className="flex items-center gap-3">
+                          {editedProfile.photo || profile.photo ? (
+                            <div className="relative group w-20 h-20 rounded-full overflow-hidden border-2 border-primary shadow-md">
+                              <img 
+                                src={getMediaUrl(editedProfile.photo || profile.photo || '')} 
+                                alt="Preview" 
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <button
+                                  type="button"
+                                  onClick={handleRemovePhoto}
+                                  className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                                  title="Supprimer la photo"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="w-20 h-20 rounded-full bg-secondary/50 border-2 border-dashed border-subtle flex items-center justify-center text-muted">
+                              <span className="text-xs font-black">Aucune</span>
+                            </div>
+                          )}
+                          <label className={`flex-1 flex flex-col items-center justify-center py-3 px-4 border-2 border-dashed border-primary/30 rounded-xl cursor-pointer transition-all ${
+                            isUploadingPhoto ? 'bg-primary/10' : 'hover:bg-primary/5 hover:border-primary'
+                          }`}>
+                            <div className="flex flex-col items-center gap-1">
+                              {isUploadingPhoto ? (
+                                <>
+                                  <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                                  <span className="text-xs font-medium text-muted">Envoi...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <UploadCloud size={20} className="text-primary" />
+                                  <span className="text-xs font-medium text-primary">Changer photo</span>
+                                </>
+                              )}
+                            </div>
+                            <input 
+                              type="file" 
+                              accept="image/*" 
+                              className="hidden" 
+                              onChange={handlePhotoUpload}
+                              disabled={isUploadingPhoto}
+                            />
+                          </label>
+                        </div>
+                      </div>
+
                       <div>
                         <label className="block text-sm font-black uppercase tracking-wider text-muted mb-2">Nom</label>
                         <input

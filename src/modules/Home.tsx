@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  getEvents, 
-  getReports, 
-  getBoardMembers, 
-  getMediaUrl, 
-  renderBlocksToText 
+import {
+  getEvents,
+  getReports,
+  getBoardMembers,
+  getMediaUrl,
+  renderBlocksToText
 } from '../services/supabase';
 import { EventData, ReportData, BoardMemberData, translations, Language } from '../types';
 import { useLanguage } from '../components/LanguageContext';
@@ -43,7 +43,7 @@ export default function Home() {
           getReports(),
           getBoardMembers()
         ]);
-        
+
         // Les données sont déjà triées par le service Supabase
         setEvents(eventsData);
         setReports(reportsData);
@@ -89,28 +89,26 @@ export default function Home() {
         <div className={`${PANEL_MAX_H} overflow-y-auto py-2 px-2`} style={{ scrollbarWidth: 'none' }}>
           {loading
             ? [...Array(4)].map((_, i) => (
-                <div key={i} className={`h-14 rounded-2xl mb-1.5 animate-pulse bg-card`} />
-              ))
+              <div key={i} className={`h-14 rounded-2xl mb-1.5 animate-pulse bg-card`} />
+            ))
             : boardMembers.length === 0
-            ? <p className={`text-center text-xs py-8 text-muted`}>Aucun membre</p>
-            : boardMembers.map((member, idx) => (
+              ? <p className={`text-center text-xs py-8 text-muted`}>Aucun membre</p>
+              : boardMembers.map((member, idx) => (
                 <div key={member.id}>
                   <motion.button
                     initial={{ opacity: 0, x: -6 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.04 }}
                     onClick={() => setExpandedMember(expandedMember === member.id ? null : member.id)}
-                    className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-all ${
-                      expandedMember === member.id
-                        ? isDark ? 'bg-emerald-950/60 ring-1 ring-emerald-700/40' : 'bg-emerald-50 ring-1 ring-emerald-200'
-                        : 'hover:bg-card/80'
-                    }`}
+                    className={`w-full flex items-center gap-3 p-2.5 rounded-2xl text-left transition-all ${expandedMember === member.id
+                      ? isDark ? 'bg-emerald-950/60 ring-1 ring-emerald-700/40' : 'bg-emerald-50 ring-1 ring-emerald-200'
+                      : 'hover:bg-card/80'
+                      }`}
                   >
                     {/* Photo cercle */}
                     <div className="relative w-10 h-10 flex-shrink-0">
-                      <div className={`w-10 h-10 rounded-full overflow-hidden ring-2 ${
-                        expandedMember === member.id ? 'ring-emerald-500' : 'ring-subtle'
-                      }`}>
+                      <div className={`w-10 h-10 rounded-full overflow-hidden ring-2 ${expandedMember === member.id ? 'ring-emerald-500' : 'ring-subtle'
+                        }`}>
                         {member.photo ? (
                           <Image
                             src={getMediaUrl(member.photo)}
@@ -121,14 +119,12 @@ export default function Home() {
                             unoptimized={member.photo.startsWith('http')}
                           />
                         ) : (
-                          <div className={`w-full h-full flex items-center justify-center text-sm font-black ${
-                            isDark ? 'bg-zinc-800 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
-                          }`}>
+                          <div className={`w-full h-full flex items-center justify-center text-sm font-black ${isDark ? 'bg-zinc-800 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+                            }`}>
                             {member.name?.[0]}
                           </div>
                         )}
                       </div>
-                      <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ${isDark ? 'ring-zinc-900' : 'ring-white'}`} />
                     </div>
 
                     {/* Nom + rôle */}
@@ -141,9 +137,8 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <ChevronDown size={13} className={`flex-shrink-0 transition-transform ${
-                      expandedMember === member.id ? 'rotate-180 text-emerald-500' : isDark ? 'text-zinc-600' : 'text-stone-300'
-                    }`} />
+                    <ChevronDown size={13} className={`flex-shrink-0 transition-transform ${expandedMember === member.id ? 'rotate-180 text-emerald-500' : isDark ? 'text-zinc-600' : 'text-stone-300'
+                      }`} />
                   </motion.button>
 
                   {/* Bio */}
@@ -156,9 +151,8 @@ export default function Home() {
                         transition={{ duration: 0.18 }}
                         className="overflow-hidden px-2"
                       >
-                        <div className={`py-2.5 px-3 rounded-xl text-xs leading-relaxed mb-1 ${
-                          isDark ? 'bg-zinc-800/50 text-zinc-400' : 'bg-stone-100 text-stone-500'
-                        }`}>
+                        <div className={`py-2.5 px-3 rounded-xl text-xs leading-relaxed mb-1 ${isDark ? 'bg-zinc-800/50 text-zinc-400' : 'bg-stone-100 text-stone-500'
+                          }`}>
                           {member.biography || 'Aucune biographie disponible.'}
                         </div>
                       </motion.div>
@@ -171,9 +165,8 @@ export default function Home() {
       </div>
 
       {/* ── Bloc Rapports ── */}
-      <div className={`rounded-3xl border overflow-hidden ${
-        isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-stone-200 shadow-sm'
-      }`}>
+      <div className={`rounded-3xl border overflow-hidden ${isDark ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-stone-200 shadow-sm'
+        }`}>
         {/* Header */}
         <div className={`flex items-center gap-2 px-5 py-4 border-b ${isDark ? 'border-zinc-800' : 'border-stone-100'}`}>
           <FileText size={14} className="text-emerald-600" />
@@ -184,26 +177,24 @@ export default function Home() {
         <div className={`${PANEL_MAX_H} overflow-y-auto py-2 px-2`} style={{ scrollbarWidth: 'none' }}>
           {loading
             ? [...Array(3)].map((_, i) => (
-                <div key={i} className={`h-20 rounded-2xl mb-1.5 animate-pulse ${isDark ? 'bg-zinc-800' : 'bg-stone-100'}`} />
-              ))
+              <div key={i} className={`h-20 rounded-2xl mb-1.5 animate-pulse ${isDark ? 'bg-zinc-800' : 'bg-stone-100'}`} />
+            ))
             : reports.length === 0
-            ? <p className={`text-center text-xs py-8 ${isDark ? 'text-zinc-600' : 'text-stone-400'}`}>Aucun rapport</p>
-            : reports.map((report, idx) => (
+              ? <p className={`text-center text-xs py-8 ${isDark ? 'text-zinc-600' : 'text-stone-400'}`}>Aucun rapport</p>
+              : reports.map((report, idx) => (
                 <motion.div
                   key={report.id}
                   initial={{ opacity: 0, x: -6 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className={`p-3 rounded-2xl mb-1.5 border transition-all ${
-                    isDark
-                      ? 'bg-zinc-800/40 border-zinc-700/50 hover:border-emerald-700/40 hover:bg-zinc-800'
-                      : 'bg-stone-50 border-stone-200 hover:border-emerald-200 hover:bg-white'
-                  }`}
+                  className={`p-3 rounded-2xl mb-1.5 border transition-all ${isDark
+                    ? 'bg-zinc-800/40 border-zinc-700/50 hover:border-emerald-700/40 hover:bg-zinc-800'
+                    : 'bg-stone-50 border-stone-200 hover:border-emerald-200 hover:bg-white'
+                    }`}
                 >
                   <div className="flex gap-2.5 items-start">
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      isDark ? 'bg-emerald-950 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
-                    }`}>
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 ${isDark ? 'bg-emerald-950 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+                      }`}>
                       <FileText size={14} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -222,16 +213,18 @@ export default function Home() {
                               href={getMediaUrl(report.document_pdf_link)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[10px] font-bold hover:bg-emerald-500 transition-colors"
+                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 !text-white text-[10px] font-bold hover:bg-emerald-500 transition-colors"
                             >
                               <ExternalLink size={9} /> Lire
                             </a>
+
+
+
                             <a
                               href={getMediaUrl(report.document_pdf_link)}
                               download
-                              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors ${
-                                isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-200 text-stone-600 hover:bg-stone-300'
-                              }`}
+                              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors ${isDark ? 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600' : 'bg-stone-200 text-stone-600 hover:bg-stone-300'
+                                }`}
                             >
                               <Download size={9} /> PDF
                             </a>
@@ -283,11 +276,10 @@ export default function Home() {
       <div className="lg:hidden sticky top-20 z-30 px-4 py-3">
         <button
           onClick={() => setShowMobileSidebar(true)}
-          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg ${
-            isDark 
-              ? 'bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-700/50' 
-              : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'
-          }`}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg ${isDark
+            ? 'bg-emerald-900/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-700/50'
+            : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200'
+            }`}
         >
           <Menu size={18} />
           Bureau & Rapports
@@ -323,9 +315,8 @@ export default function Home() {
                 <h3 className="font-bold text-lg">Informations</h3>
                 <button
                   onClick={() => setShowMobileSidebar(false)}
-                  className={`p-2 rounded-xl transition-colors ${
-                    isDark ? 'hover:bg-zinc-800' : 'hover:bg-stone-100'
-                  }`}
+                  className={`p-2 rounded-xl transition-colors ${isDark ? 'hover:bg-zinc-800' : 'hover:bg-stone-100'
+                    }`}
                 >
                   <XIcon size={20} />
                 </button>
@@ -371,9 +362,8 @@ export default function Home() {
                 <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 tracking-tight">
                   {t.home.presentationTitle}
                 </h2>
-                <p className={`text-base md:text-lg leading-relaxed mb-6 md:mb-8 text-justify ${
-                  isDark ? 'text-zinc-400' : 'text-zinc-500'
-                }`}>
+                <p className={`text-base md:text-lg leading-relaxed mb-6 md:mb-8 text-justify ${isDark ? 'text-zinc-400' : 'text-zinc-500'
+                  }`}>
                   {t.home.presentationText}
                 </p>
                 <div className="grid grid-cols-2 gap-6 md:gap-8">
@@ -391,7 +381,7 @@ export default function Home() {
                   </div>
                 </div>
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -399,11 +389,13 @@ export default function Home() {
                 className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl order-1 md:order-2"
               >
                 <Image
-                  src="/photoleft.jpg"
+                  src={getMediaUrl('ImagesStatics/aef5b2cb-bfb5-41f2-9100-73fd71fe98e8.jpg')}
                   alt="Impact"
                   fill
                   className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
+
               </motion.div>
             </div>
           </section>
@@ -421,8 +413,8 @@ export default function Home() {
                   {t.home.recentEvents}
                 </h2>
               </div>
-              <a 
-                href="/events" 
+              <a
+                href="/events"
                 className="text-emerald-600 hover:text-emerald-500 font-medium flex items-center gap-2 transition-colors text-sm whitespace-nowrap"
               >
                 Voir tout <ArrowRight size={16} />
@@ -432,72 +424,66 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {loading
                 ? [...Array(3)].map((_, i) => (
-                    <div 
-                      key={i} 
-                      className={`aspect-[4/3] rounded-3xl animate-pulse ${
-                        isDark ? 'bg-zinc-800' : 'bg-stone-200'
-                      }`} 
-                    />
-                  ))
-                : events.slice(0, 3).map((event, idx) => (
-                    <motion.div
-                      key={event.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.08 }}
-                      className={`group cursor-pointer rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 ${
-                        isDark ? 'bg-zinc-900' : 'bg-white'
+                  <div
+                    key={i}
+                    className={`aspect-[4/3] rounded-3xl animate-pulse ${isDark ? 'bg-zinc-800' : 'bg-stone-200'
                       }`}
-                      onClick={() => setSelectedEvent(event)}
-                    >
-                      {/* Image principale */}
-                      <div className="relative w-full aspect-[4/3] overflow-hidden">
-                        {event.cover_photo ? (
-                          <Image
-                            src={getMediaUrl(event.cover_photo)}
-                            alt={event.title}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                            unoptimized={event.cover_photo.startsWith('http')}
-                          />
-                        ) : (
-                          <div className={`w-full h-full flex items-center justify-center ${
-                            isDark ? 'bg-zinc-800' : 'bg-stone-100'
+                  />
+                ))
+                : events.slice(0, 3).map((event, idx) => (
+                  <motion.div
+                    key={event.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.08 }}
+                    className={`group cursor-pointer rounded-3xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 hover:-translate-y-1 ${isDark ? 'bg-zinc-900' : 'bg-white'
+                      }`}
+                    onClick={() => setSelectedEvent(event)}
+                  >
+                    {/* Image principale */}
+                    <div className="relative w-full aspect-[4/3] overflow-hidden">
+                      {event.cover_photo ? (
+                        <Image
+                          src={getMediaUrl(event.cover_photo)}
+                          alt={event.title}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          unoptimized={event.cover_photo.startsWith('http')}
+                        />
+                      ) : (
+                        <div className={`w-full h-full flex items-center justify-center ${isDark ? 'bg-zinc-800' : 'bg-stone-100'
                           }`}>
-                            <Calendar className={isDark ? 'text-zinc-600' : 'text-stone-400'} size={48} />
-                          </div>
-                        )}
-                        {/* Date badge */}
-                        <div className={`absolute top-3 left-3 px-2.5 md:px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest backdrop-blur-md z-10 ${
-                          isDark ? 'bg-black/60 text-zinc-200' : 'bg-white/90 text-stone-700'
-                        }`}>
-                          {new Date(event.date).toLocaleDateString(
-                            language === 'fr' ? 'fr-FR' : 'en-US',
-                            { year: 'numeric', month: 'long' }
-                          )}
+                          <Calendar className={isDark ? 'text-zinc-600' : 'text-stone-400'} size={48} />
                         </div>
+                      )}
+                      {/* Date badge */}
+                      <div className={`absolute top-3 left-3 px-2.5 md:px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest backdrop-blur-md z-10 ${isDark ? 'bg-black/60 text-zinc-200' : 'bg-white/90 text-stone-700'
+                        }`}>
+                        {new Date(event.date).toLocaleDateString(
+                          language === 'fr' ? 'fr-FR' : 'en-US',
+                          { year: 'numeric', month: 'long' }
+                        )}
                       </div>
+                    </div>
 
-                      {/* Contenu texte */}
-                      <div className="p-4 md:p-5">
-                        <h3 className={`text-base md:text-lg font-black mb-2 leading-tight group-hover:text-emerald-600 transition-colors ${
-                          isDark ? 'text-zinc-100' : 'text-stone-900'
+                    {/* Contenu texte */}
+                    <div className="p-4 md:p-5">
+                      <h3 className={`text-base md:text-lg font-black mb-2 leading-tight group-hover:text-emerald-600 transition-colors ${isDark ? 'text-zinc-100' : 'text-stone-900'
                         }`}>
-                          {event.title}
-                        </h3>
-                        <p className={`text-sm leading-relaxed line-clamp-3 mb-4 ${
-                          isDark ? 'text-zinc-400' : 'text-stone-500'
+                        {event.title}
+                      </h3>
+                      <p className={`text-sm leading-relaxed line-clamp-3 mb-4 ${isDark ? 'text-zinc-400' : 'text-stone-500'
                         }`}>
-                          {renderBlocksToText(event.content)}
-                        </p>
-                        <button className="flex items-center gap-2 px-3.5 md:px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm shadow-emerald-900/20">
-                          <ExternalLink size={12} /> Lire
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))
+                        {renderBlocksToText(event.content)}
+                      </p>
+                      <button className="flex items-center gap-2 px-3.5 md:px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-sm shadow-emerald-900/20">
+                        <ExternalLink size={12} /> Lire
+                      </button>
+                    </div>
+                  </motion.div>
+                ))
               }
             </div>
           </section>
@@ -509,9 +495,8 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 tracking-tight">
               {t.about.title}
             </h2>
-            <p className={`text-base md:text-xl text-justify md:text-center mb-8 md:mb-10 leading-relaxed max-w-xl mx-auto ${
-              isDark ? 'text-zinc-400' : 'text-zinc-500'
-            }`}>
+            <p className={`text-base md:text-xl text-justify md:text-center mb-8 md:mb-10 leading-relaxed max-w-xl mx-auto ${isDark ? 'text-zinc-400' : 'text-zinc-500'
+              }`}>
               {t.about.text}
             </p>
           </section>
@@ -524,9 +509,8 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 tracking-tight">
               {t.support.title}
             </h2>
-            <p className={`text-base md:text-xl mb-8 md:mb-10 leading-relaxed max-w-xl mx-auto ${
-              isDark ? 'text-zinc-400' : 'text-zinc-500'
-            }`}>
+            <p className={`text-base md:text-xl mb-8 md:mb-10 leading-relaxed max-w-xl mx-auto ${isDark ? 'text-zinc-400' : 'text-zinc-500'
+              }`}>
               {t.support.motivation}
             </p>
             <button className="px-8 md:px-10 py-4 md:py-5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-bold text-base md:text-lg transition-all shadow-xl shadow-emerald-900/20 w-full sm:w-auto">

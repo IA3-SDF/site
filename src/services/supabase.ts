@@ -172,8 +172,12 @@ export async function getCurrentUserProfile(): Promise<UserProfile | null> {
   try {
     const { data: authData, error: authError } = await supabase.auth.getSession();
     
-    if (authError || !authData?.session?.user?.id) {
+    if (authError) {
       console.error('Error getting session:', authError);
+      return null;
+    }
+    
+    if (!authData?.session?.user?.id) {
       return null;
     }
 

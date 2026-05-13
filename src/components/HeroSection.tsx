@@ -28,7 +28,7 @@ export function HeroSection({ t }: { t: any }) {
           className="relative w-full h-full"
         >
           <Image
-            src="/photoPRINCIPALE.jpg"
+            src="https://xucxrnwuxwdwfqvfhlib.supabase.co/storage/v1/object/public/amescao/ImagesStatics/bc9b1594-184c-40f8-8c56-2aacd633eb5f.jpg"
             alt="Aouda"
             fill
             sizes="100vw"
@@ -80,7 +80,7 @@ export function HeroSection({ t }: { t: any }) {
           transition={{ delay: 1.0, duration: 0.6 }}
           className="text-emerald-400 text-xs md:text-sm font-bold uppercase tracking-[0.4em] mb-5"
         >
-                Amicale des élèves étudiants et stagiaires du canton d'Aouda
+          Amicale des élèves étudiants et stagiaires du canton d'Aouda
         </motion.p>
 
         {/* Sous-titre */}
@@ -88,10 +88,11 @@ export function HeroSection({ t }: { t: any }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.25, duration: 0.8 }}
-          className="text-body text-base md:text-xl font-light leading-relaxed max-w-xl mx-auto mb-10"
+          className="text-white text-base md:text-xl font-light leading-relaxed max-w-xl mx-auto mb-10 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]"
         >
           {t.home.heroSubtitle}
         </motion.p>
+
 
         {/* Bouton */}
         <motion.button

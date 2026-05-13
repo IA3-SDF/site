@@ -21,7 +21,7 @@ export function useConsent() {
     setHasConsented(hasUserConsented());
     setIsLoading(false);
 
-    // Écouter les changements (optionnel)
+    // Listen for both cross-tab storage changes and same-tab custom events
     const handleStorageChange = () => {
       const updated = getLocalConsent();
       setConsent(updated);
@@ -29,9 +29,11 @@ export function useConsent() {
     };
 
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('consentChanged', handleStorageChange as EventListener);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('consentChanged', handleStorageChange as EventListener);
     };
   }, []);
 

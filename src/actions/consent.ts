@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 /**
@@ -13,32 +13,30 @@ export async function saveUserConsent(consentData: {
   preferences: boolean;
 }) {
   try {
-    // Initialiser le client Supabase côté serveur
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseServiceKey) {
+    if (!supabaseUrl || !supabaseAnonKey) {
       throw new Error('Missing Supabase environment variables');
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
+    // Create server-side Supabase client with proper cookie handling
+    const cookieStore = await cookies();
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: any) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name: string, options: any) {
+          cookieStore.set({ name, value: '', ...options });
+        },
       },
     });
 
-    // Récupérer les cookies pour obtenir la session
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('sb-auth-token')?.value;
-
-    if (!sessionCookie) {
-      // Utilisateur non authentifié - accepter silencieusement
-      console.log('[Consent] User not authenticated, consent stored locally only');
-      return { success: true, authenticated: false };
-    }
-
-    // Obtenir l'utilisateur courant via la session
+    // Get the current user from the authenticated session
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {

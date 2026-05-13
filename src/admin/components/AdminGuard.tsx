@@ -66,7 +66,7 @@ export default function AdminGuard({ children }: AdminGuardProps) {
   };
 
   const handleRedirectToHome = () => {
-    router.push('/home');
+    router.push('/');
   };
 
   if (loading) {

@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useCallback } from 'react';
+import DOMPurify from 'dompurify';
 import { Bold, Italic, Underline, Heading1, Heading2, List, LucideIcon } from 'lucide-react';
 
 interface RichEditorProps {
@@ -23,14 +24,15 @@ export default function RichEditor({ content, setContent }: RichEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const isUpdatingRef = useRef(false);
 
-  // Synchroniser le contenu externe vers l'éditeur
+  // Synchroniser le contenu externe vers l'éditeur avec HTML sanitization
   useEffect(() => {
     if (editorRef.current && !isUpdatingRef.current) {
       // Ne mettre à jour que si différent pour éviter le curseur qui saute
       const currentHtml = editorRef.current.innerHTML;
       const newContent = content || '';
-      if (currentHtml !== newContent) {
-        editorRef.current.innerHTML = newContent;
+      const sanitizedContent = DOMPurify.sanitize(newContent);
+      if (currentHtml !== sanitizedContent) {
+        editorRef.current.innerHTML = sanitizedContent;
       }
     }
   }, [content]);

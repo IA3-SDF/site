@@ -64,7 +64,7 @@ export default function Support() {
             {/* Image: 2/3 */}
             <div className="relative h-2/3 w-full p-8">
               <Image
-                src="/YAS.png"
+                src="https://xucxrnwuxwdwfqvfhlib.supabase.co/storage/v1/object/public/amescao/ImagesStatics/YAS.png"
                 alt="Mixx by Yas"
                 fill
                 sizes="(max-width: 640px) 100vw, 50vw"
@@ -98,7 +98,7 @@ export default function Support() {
             {/* Image: 2/3 */}
             <div className="relative h-2/3 w-full p-8">
               <Image
-                src="/flooz.png"
+                src="https://xucxrnwuxwdwfqvfhlib.supabase.co/storage/v1/object/public/amescao/ImagesStatics/flooz.png"
                 alt="Flooz"
                 fill
                 sizes="(max-width: 640px) 100vw, 50vw"

@@ -11,8 +11,6 @@ export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const url = req.nextUrl.clone()
 
-  const publicRoutes = ['/auth/login', '/auth/signup']
-  const protectedRoutes = ['/home', '/albums', '/events', '/contact', '/support']
   const adminRoutes = ['/admin']
 
   console.log(`[Middleware] 🔍 ${pathname} | session: ${hasSession}`)
@@ -26,39 +24,48 @@ export async function proxy(req: NextRequest) {
       {
         cookies: {
           get(name: string) {
-            return req.cookies.get(name)?.value
+            return req.cookies.get(name)?.value;
+          },
+          set(name: string, value: string, options: any) {
+            response.cookies.set({ name, value, ...options });
+          },
+          remove(name: string, options: any) {
+            response.cookies.set({ name, value: '', ...options });
           },
         },
       }
     )
 
-    // Récupérer le profil utilisateur pour vérifier le rôle
-    const { data: profile } = await supabase
+    // Récupérer le profil utilisateur pour vérifier le rôle avec timeout
+    const profilePromise = supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
-      .single()
+      .single();
 
-    isAdmin = profile?.role === 'admin'
-  }
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+    );
 
-  // 3. Redirections
-  if (publicRoutes.some(route => pathname.startsWith(route))) {
-    if (hasSession) {
-      url.pathname = '/home'
-      return NextResponse.redirect(url)
+    try {
+      const { data: profile, error: profileError } = await Promise.race([
+        profilePromise,
+        timeoutPromise,
+      ]) as any;
+
+      if (profileError) {
+        console.error('[Middleware] Profile fetch error:', profileError);
+        isAdmin = false;
+      } else if (profile) {
+        isAdmin = profile.role === 'admin';
+      }
+    } catch (err) {
+      console.error('[Middleware] Profile fetch timeout or error:', err);
+      isAdmin = false;
     }
-    return response
   }
 
-  if (protectedRoutes.some(route => pathname.startsWith(route))) {
-    if (!hasSession) {
-      url.pathname = '/auth/login'
-      return NextResponse.redirect(url)
-    }
-    return response
-  }
-
+  // 3. Protection admin uniquement
   if (adminRoutes.some(route => pathname.startsWith(route))) {
     if (!hasSession || !isAdmin) {
       url.pathname = '/auth/login'
@@ -67,15 +74,7 @@ export async function proxy(req: NextRequest) {
     return response
   }
 
-  if (pathname === '/') {
-    if (hasSession) {
-      url.pathname = '/home'
-      return NextResponse.redirect(url)
-    }
-    url.pathname = '/auth/login'
-    return NextResponse.redirect(url)
-  }
-
+  // 4. Toutes les autres pages sont publiques (pas de redirection)
   return response
 }
 

@@ -10,5 +10,10 @@ build
 
 # misc
 .DS_Store
+
+# environment variables
+.env
 .env.local
-.env.example
+.env.development
+.env.production
+.env.test

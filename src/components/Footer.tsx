@@ -39,18 +39,29 @@ const Footer: React.FC = () => {
             <h3 className="font-bold text-lg mb-6 text-main">{t.nav.contact}</h3>
             <ul className="space-y-4">
               <li className="flex items-center space-x-3 text-muted">
-                <Mail size={18} className="text-primary" />
+                {/* On ajoute une largeur fixe à l'icône pour qu'elles soient toutes alignées sur la même colonne */}
+                <div className="w-7 flex justify-start items-center">
+                  <Mail size={18} className="text-primary shrink-0" />
+                </div>
                 <span>amescao2026@gmail.com</span>
               </li>
+
               <li className="flex items-center space-x-3 text-muted">
-                <Phone size={18} className="text-primary" />
+                <div className="w-7 flex justify-start items-center">
+                  <Phone size={18} className="text-primary shrink-0" />
+                </div>
                 <span>+228 92 85 92 00</span>
               </li>
+
               <li className="flex items-center space-x-3 text-muted">
-                <MapPin size={18} className="text-primary" />
+                <div className="w-7 flex justify-start items-center">
+                  <MapPin size={18} className="text-primary shrink-0" />
+                </div>
                 <span>Aouda, Canton d&apos;Aouda, Togo</span>
               </li>
             </ul>
+
+
           </div>
 
           <div>

@@ -70,10 +70,10 @@ class DebugService {
 
     if (typeof window !== 'undefined') {
       console.log(
-        `%c${entry.timestamp} %c[${module}] ${this.formatLevel('DEBUG')} ${message}`,
+        `%c${entry.timestamp} %c[${module}]%c 🔍 ${message}`,
         'color: #666; font-size: 0.8em;',
         'color: #333; font-weight: bold;',
-        'color: #8b5cf6;',
+        'color: #8b5cf6; font-weight: bold;',
         data !== undefined ? data : ''
       );
     }
